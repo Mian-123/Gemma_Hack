@@ -4,6 +4,8 @@ from app.database.session import get_db
 from app.database.models import User, Resume, SkillGapReport, Roadmap
 from app.auth.dependencies import get_current_user
 from app.limiter import limiter
+from app.utils.sanitize import sanitize_jd_text, sanitize_text
+from app.ai.ollama_client import AIGenerationError
 from pydantic import BaseModel
 from typing import List, Optional
 from app.ai.skill_gap_ai import analyze_skill_gap
@@ -57,15 +59,18 @@ def skill_gap(
             "preferred_language": "Python"
         }
         
-    # 3. Call AI matching logic
+    # 3. Sanitize JD text before passing to local Gemma
+    safe_jd = sanitize_jd_text(payload.jobDescription)
+
+    # 4. Call AI matching logic (runs against local Ollama — no external LLM API)
     try:
-        report = analyze_skill_gap(profile_data, payload.jobDescription)
+        report = analyze_skill_gap(profile_data, safe_jd)
         report_data = report.model_dump()
-        
-        # 4. Store report in database
+
+        # 5. Store report in database
         new_report = SkillGapReport(
             user_id=current_user.id,
-            job_description=payload.jobDescription,
+            job_description=safe_jd,
             overall_match_percentage=report.overallMatchPercentage,
             gap_summary=report.gapSummary,
             skills=report_data["skills"],
@@ -74,33 +79,21 @@ def skill_gap(
         db.add(new_report)
         db.commit()
         db.refresh(new_report)
-        
+
         return {
             "success": True,
-            "data": {
-                "id": new_report.id,
-                **report_data
-            },
+            "data": {"id": new_report.id, **report_data},
             "error": None
         }
+    except AIGenerationError as e:
+        # Gemma / Ollama unreachable — surface as 503 so frontend can show graceful message
+        raise HTTPException(
+            status_code=503,
+            detail="AI service unavailable. Make sure Ollama is running locally and the gemma4:e2b model is pulled."
+        )
     except Exception as e:
-        print(f"Error compiling skill gap: {e}. Returning fallback stub.")
-        # Fallback dictionary matching schema
-        fallback_data = {
-            "id": 999,
-            "overallMatchPercentage": 70,
-            "gapSummary": "Candidate matches backend, lacks Docker and Kubernetes skills (Fallback).",
-            "skills": [
-                {"skill": "Python", "category": "matched", "details": "Strong backend experience."},
-                {"skill": "Docker", "category": "missing", "details": "Not listed on profile."}
-            ],
-            "roadmapSeedSkills": ["Docker", "Kubernetes"]
-        }
-        return {
-            "success": True,
-            "data": fallback_data,
-            "error": None
-        }
+        print(f"Error compiling skill gap: {e}")
+        raise HTTPException(status_code=500, detail=f"Skill gap analysis failed: {str(e)}")
 
 @router.post("/roadmap")
 @limiter.limit("20/hour")
@@ -115,57 +108,39 @@ def learning_roadmap(
     if current_user.profile and current_user.profile.career_memory:
         career_memory = current_user.profile.career_memory
         
-    # 2. Call AI roadmap planner
+    # 2. Sanitize inputs
+    safe_role = sanitize_text(payload.roleTitle)
+    safe_skills = [sanitize_text(s) for s in payload.missingSkills]
+
+    # 3. Call AI roadmap planner (local Ollama)
     try:
-        roadmap = generate_learning_roadmap(payload.roleTitle, payload.missingSkills, career_memory)
+        roadmap = generate_learning_roadmap(safe_role, safe_skills, career_memory)
         roadmap_data = roadmap.model_dump()
-        
-        # 3. Save roadmap to database
+
+        # 4. Save roadmap to database
         new_roadmap = Roadmap(
             user_id=current_user.id,
-            role_title=payload.roleTitle,
+            role_title=safe_role,
             steps=roadmap_data["steps"],
             projects=roadmap_data["projects"]
         )
         db.add(new_roadmap)
         db.commit()
         db.refresh(new_roadmap)
-        
+
         return {
             "success": True,
-            "data": {
-                "id": new_roadmap.id,
-                **roadmap_data
-            },
+            "data": {"id": new_roadmap.id, **roadmap_data},
             "error": None
         }
+    except AIGenerationError:
+        raise HTTPException(
+            status_code=503,
+            detail="AI service unavailable. Make sure Ollama is running locally and the gemma4:e2b model is pulled."
+        )
     except Exception as e:
-        print(f"Error generating learning roadmap: {e}. Returning fallback stub.")
-        fallback_roadmap = {
-            "id": 999,
-            "roleTitle": payload.roleTitle,
-            "steps": [
-                {
-                    "stepNumber": 1,
-                    "topic": "Docker Containerization (Fallback)",
-                    "concepts": ["Images", "Containers", "Dockerfiles"],
-                    "estimatedHours": 8,
-                    "resources": ["Docker official docs", "FastAPI on Docker guides"]
-                }
-            ],
-            "projects": [
-                {
-                    "title": "Local API Containerization",
-                    "description": "Create a Dockerfile for a FastAPI backend application and run it.",
-                    "skillsExercised": ["Docker"]
-                }
-            ]
-        }
-        return {
-            "success": True,
-            "data": fallback_roadmap,
-            "error": None
-        }
+        print(f"Error generating learning roadmap: {e}")
+        raise HTTPException(status_code=500, detail=f"Roadmap generation failed: {str(e)}")
 
 @router.post("/interview")
 @limiter.limit("20/hour")
@@ -197,34 +172,23 @@ def interview_prep(
             "preferred_language": "Python"
         }
 
-    # 3. Call AI interview planner
+    # 3. Sanitize inputs
+    safe_role = sanitize_text(payload.roleTitle)
+    safe_jd = sanitize_jd_text(payload.jobDescription)
+
+    # 4. Call AI interview planner (local Ollama)
     try:
-        prep = generate_interview_prep(payload.roleTitle, payload.jobDescription, profile_data)
+        prep = generate_interview_prep(safe_role, safe_jd, profile_data)
         prep_data = prep.model_dump()
-        return {
-            "success": True,
-            "data": prep_data,
-            "error": None
-        }
+        return {"success": True, "data": prep_data, "error": None}
+    except AIGenerationError:
+        raise HTTPException(
+            status_code=503,
+            detail="AI service unavailable. Make sure Ollama is running locally."
+        )
     except Exception as e:
-        print(f"Error generating interview prep: {e}. Returning fallback stub.")
-        fallback_prep = {
-            "roleTitle": payload.roleTitle,
-            "questions": [
-                {
-                    "questionNumber": 1,
-                    "question": "How does local inference protect candidate resume data in OpportunityAI? (Fallback)",
-                    "questionType": "technical",
-                    "suggestedAnswer": "OpportunityAI runs Gemma locally, meaning resume data never leaves the user node.",
-                    "evaluationCriteria": "Understanding of local LLM privacy pipelines."
-                }
-            ]
-        }
-        return {
-            "success": True,
-            "data": fallback_prep,
-            "error": None
-        }
+        print(f"Error generating interview prep: {e}")
+        raise HTTPException(status_code=500, detail=f"Interview prep failed: {str(e)}")
 
 @router.post("/cover-letter")
 @limiter.limit("20/hour")
@@ -258,27 +222,27 @@ def cover_letter(
             "experience": []
         }
 
-    # 3. Call AI cover letter draft builder
+    # 3. Sanitize inputs
+    safe_role = sanitize_text(payload.roleTitle)
+    safe_jd = sanitize_jd_text(payload.jobDescription)
+    safe_tone = sanitize_text(payload.tone, max_length=50)
+
+    # 4. Call AI cover letter draft builder (local Ollama)
     try:
-        letter = generate_cover_letter(payload.roleTitle, payload.jobDescription, profile_data, payload.tone)
+        letter = generate_cover_letter(safe_role, safe_jd, profile_data, safe_tone)
         return {
             "success": True,
-            "data": {
-                "tone": payload.tone,
-                "content": f"{letter.subject}\n\n{letter.body}"
-            },
+            "data": {"tone": safe_tone, "content": f"{letter.subject}\n\n{letter.body}"},
             "error": None
         }
+    except AIGenerationError:
+        raise HTTPException(
+            status_code=503,
+            detail="AI service unavailable. Make sure Ollama is running locally."
+        )
     except Exception as e:
-        print(f"Error generating cover letter: {e}. Returning fallback stub.")
-        return {
-            "success": True,
-            "data": {
-                "tone": payload.tone,
-                "content": f"Dear Hiring Manager,\n\nI am writing to express my strong interest in the {payload.roleTitle} role. With my background in software development and technical expertise, I am confident in my ability to contribute effectively to your team."
-            },
-            "error": None
-        }
+        print(f"Error generating cover letter: {e}")
+        raise HTTPException(status_code=500, detail=f"Cover letter generation failed: {str(e)}")
 
 from fastapi.responses import StreamingResponse
 import httpx
@@ -315,8 +279,9 @@ async def skill_gap_stream(
     jobDescription: str,
     current_user: User = Depends(get_current_user)
 ):
+    safe_jd = sanitize_jd_text(jobDescription)
     system_prompt = "You are a skill gap analysis engine. Explain step-by-step how the candidate matches this job description and what gaps they need to fill."
-    prompt = f"Job Description:\n{jobDescription}\n\nAnalyze the skill gap."
+    prompt = f"Job Description:\n{safe_jd}\n\nAnalyze the skill gap."
     return StreamingResponse(stream_gemma_tokens(prompt, system_prompt), media_type="text/event-stream")
 
 @router.get("/roadmap/stream")
@@ -325,7 +290,9 @@ async def roadmap_stream(
     missingSkills: str,
     current_user: User = Depends(get_current_user)
 ):
+    safe_role = sanitize_text(roleTitle)
+    safe_skills = sanitize_text(missingSkills)
     system_prompt = "You are a learning roadmap planner. Outline a clear structured learning path."
-    prompt = f"Target Role: {roleTitle}\nMissing Skills to cover: {missingSkills}\n\nDraft a learning curriculum."
+    prompt = f"Target Role: {safe_role}\nMissing Skills to cover: {safe_skills}\n\nDraft a learning curriculum."
     return StreamingResponse(stream_gemma_tokens(prompt, system_prompt), media_type="text/event-stream")
 
