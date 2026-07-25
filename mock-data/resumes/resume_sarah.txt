@@ -1,0 +1,18 @@
+Sarah Connor
+Email: sarah.connor@example.com
+Phone: +1-310-555-0199
+Location: Los Angeles, CA
+Preferred Language: JavaScript
+
+Education:
+- Fullstack Web Development Certificate, CodeAcademy Bootcamp (2024)
+- High School Diploma, LA High School (2018 - 2022)
+
+Skills:
+- Frontend: HTML5, CSS3, Tailwind CSS, JavaScript, React
+- Version Control: Git, GitHub
+
+Experience:
+- No formal professional developer jobs. 
+- Built multiple simple landing pages and a responsive calculator in React.
+- Looking to identify tech gaps to transition into full-time Frontend Developer roles.

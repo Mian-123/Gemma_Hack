@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: opportunity_redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: opportunity_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: always
+
+volumes:
+  ollama_data:

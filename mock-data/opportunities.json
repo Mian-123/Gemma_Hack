@@ -1,0 +1,182 @@
+[
+  {
+    "title": "Junior Backend Developer",
+    "company": "FastAPI Solutions",
+    "description": "We are seeking a junior python backend developer with passion for building clean APIs. You will work with Python, FastAPI, SQLModel, and PostgreSQL. Docker experience is highly preferred.",
+    "opportunity_type": "job",
+    "url": "https://example.com/jobs/fastapi-solutions-jr",
+    "location": "Remote",
+    "skills_required": ["Python", "FastAPI", "PostgreSQL", "Docker", "SQLModel"]
+  },
+  {
+    "title": "Global AI Innovation Hackathon",
+    "company": "Kaggle Community",
+    "description": "Develop and deploy an innovative local AI system using open models (such as Gemma). Teams will submit code repositories, model weights, and video demonstrations.",
+    "opportunity_type": "hackathon",
+    "url": "https://example.com/hackathons/kaggle-gemma-3",
+    "location": "Online",
+    "skills_required": ["Python", "Machine Learning", "Local Inference", "Gemma"]
+  },
+  {
+    "title": "Frontend Development Intern",
+    "company": "Tailwind Systems",
+    "description": "Join our design engineering team as a Frontend Intern. Responsibilities include building responsive UI components in React and TypeScript using Tailwind CSS.",
+    "opportunity_type": "internship",
+    "url": "https://example.com/internships/tailwind-react",
+    "location": "San Francisco, CA",
+    "skills_required": ["React", "TypeScript", "Tailwind CSS", "HTML5"]
+  },
+  {
+    "title": "Data Engineering Internship",
+    "company": "Snowflake Analytics",
+    "description": "Learn the ropes of cloud data warehousing and pipeline orchestration. Experience writing SQL queries and Python code is a strong requirement.",
+    "opportunity_type": "internship",
+    "url": "https://example.com/internships/snowflake-data",
+    "location": "Seattle, WA",
+    "skills_required": ["SQL", "Python", "Snowflake", "dbt"]
+  },
+  {
+    "title": "AI & Ethics Research Fellowship",
+    "company": "Partnership on AI",
+    "description": "A research scholarship fellowship for graduates investigating the societal impacts and alignment strategies of local LLM models.",
+    "opportunity_type": "project",
+    "url": "https://example.com/projects/pai-ethics",
+    "location": "London, UK",
+    "skills_required": ["Research", "Ethics", "LLMs", "Technical Writing"]
+  },
+  {
+    "title": "DevOps Associate",
+    "company": "Cloud Infrastructure Corp",
+    "description": "Help us manage our local and cloud virtualization deployments. Key tools include Docker, Kubernetes, Linux CLI, and Terraform.",
+    "opportunity_type": "job",
+    "url": "https://example.com/jobs/devops-associate",
+    "location": "Austin, TX",
+    "skills_required": ["Docker", "Kubernetes", "Linux", "Terraform", "CI/CD"]
+  },
+  {
+    "title": "Machine Learning Engineer",
+    "company": "NeuralCraft LLC",
+    "description": "Build, fine-tune, and deploy localized models. Practical knowledge of PyTorch, Hugging Face, Transformers, and GPU acceleration is required.",
+    "opportunity_type": "job",
+    "url": "https://example.com/jobs/ml-engineer-neural",
+    "location": "Boston, MA",
+    "skills_required": ["PyTorch", "Hugging Face", "Transformers", "Python", "CUDA"]
+  },
+  {
+    "title": "Next-Gen Web Hackathon",
+    "company": "Vercel & Next.js",
+    "description": "Build next-generation server-rendered React applications using Next.js 15, React Server Components, and Tailwind CSS.",
+    "opportunity_type": "hackathon",
+    "url": "https://example.com/hackathons/vercel-next-15",
+    "location": "Online",
+    "skills_required": ["React", "Next.js", "TypeScript", "Vercel"]
+  },
+  {
+    "title": "Fullstack Apprentice",
+    "company": "CodeAcademy Labs",
+    "description": "An intensive fullstack training internship. Basic familiarity with JS, HTML, CSS, and Git is expected. You will learn modern frontend frameworks and database architectures.",
+    "opportunity_type": "internship",
+    "url": "https://example.com/internships/fullstack-apprentice",
+    "location": "New York, NY",
+    "skills_required": ["JavaScript", "HTML", "CSS", "Git"]
+  },
+  {
+    "title": "Open Source Systems Builder",
+    "company": "Apache Software Foundation",
+    "description": "Contribute to database query optimization projects. Knowledge of C++, assembly debugging, and index systems is highly valued.",
+    "opportunity_type": "project",
+    "url": "https://example.com/projects/apache-db",
+    "location": "Remote",
+    "skills_required": ["C++", "SQL", "Database Internals", "Git"]
+  },
+  {
+    "title": "Product Design Intern",
+    "company": "Figma Inc.",
+    "description": "Collaborate with cross-functional teams to design products that users love. Prototyping and user research experience is key.",
+    "opportunity_type": "internship",
+    "url": "https://example.com/internships/figma-design",
+    "location": "Remote",
+    "skills_required": ["Figma", "UI/UX", "Prototyping", "User Research"]
+  },
+  {
+    "title": "Systems Administrator",
+    "company": "RedHat Enterprise",
+    "description": "Configure, monitor, and patch Linux servers. Scripting in Bash or Python is required for automated provisioning.",
+    "opportunity_type": "job",
+    "url": "https://example.com/jobs/redhat-sysadmin",
+    "location": "Raleigh, NC",
+    "skills_required": ["Linux", "RedHat", "Bash", "Python", "Networking"]
+  },
+  {
+    "title": "Security Analyst",
+    "company": "CrowdStrike",
+    "description": "Investigate system vulnerabilities, monitor alerts, and draft incident reports. Ethical hacking background is a plus.",
+    "opportunity_type": "job",
+    "url": "https://example.com/jobs/crowdstrike-sec",
+    "location": "Sunnyvale, CA",
+    "skills_required": ["Cybersecurity", "Network Security", "Linux", "Penetration Testing"]
+  },
+  {
+    "title": "Open Source Kernel Contributor",
+    "company": "Linux Foundation",
+    "description": "Write code and tests for kernel subsystems. C programming and operating systems fundamentals are required.",
+    "opportunity_type": "project",
+    "url": "https://example.com/projects/linux-kernel",
+    "location": "Remote",
+    "skills_required": ["C", "Assembly", "Operating Systems", "Linux Kernel"]
+  },
+  {
+    "title": "Data Analyst Intern",
+    "company": "Tableau Software",
+    "description": "Analyze operational data and prepare dashboards for business units. Strong SQL and Excel skills required.",
+    "opportunity_type": "internship",
+    "url": "https://example.com/internships/tableau-data",
+    "location": "Seattle, WA",
+    "skills_required": ["SQL", "Tableau", "Excel", "Data Visualization"]
+  },
+  {
+    "title": "Technical Writer",
+    "company": "GitBook",
+    "description": "Draft product guides, REST API documentation, and tutorials for developers. Experience with Markdown is mandatory.",
+    "opportunity_type": "job",
+    "url": "https://example.com/jobs/gitbook-writer",
+    "location": "Remote",
+    "skills_required": ["Technical Writing", "Markdown", "Git", "REST APIs"]
+  },
+  {
+    "title": "Cloud Architect Internship",
+    "company": "Amazon Web Services",
+    "description": "Learn to design highly available systems on AWS. AWS Certified Cloud Practitioner is a strong plus.",
+    "opportunity_type": "internship",
+    "url": "https://example.com/internships/aws-cloud",
+    "location": "Herndon, VA",
+    "skills_required": ["AWS", "Cloud Computing", "Linux", "Networking"]
+  },
+  {
+    "title": "iOS Development Hackathon",
+    "company": "Apple Developer Community",
+    "description": "Build innovative iOS applications using Swift and SwiftUI within 48 hours. Submit App Store ready bundles.",
+    "opportunity_type": "hackathon",
+    "url": "https://example.com/hackathons/apple-swiftui",
+    "location": "Online",
+    "skills_required": ["Swift", "SwiftUI", "iOS", "Xcode"]
+  },
+  {
+    "title": "ML Research Scholar",
+    "company": "Stanford AI Lab",
+    "description": "Conduct research on model quantization and low-resource local model architectures. Write LaTeX papers.",
+    "opportunity_type": "project",
+    "url": "https://example.com/projects/stanford-ml",
+    "location": "Stanford, CA",
+    "skills_required": ["Python", "PyTorch", "Model Quantization", "LaTeX"]
+  },
+  {
+    "title": "Database Engineer",
+    "company": "Cockroach Labs",
+    "description": "Develop features for distributed SQL databases. Go and distributed consensus systems experience is a must.",
+    "opportunity_type": "job",
+    "url": "https://example.com/jobs/cockroach-db",
+    "location": "New York, NY",
+    "skills_required": ["Go", "Distributed Systems", "SQL", "Database Internals"]
+  }
+]

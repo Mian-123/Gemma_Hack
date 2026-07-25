@@ -1,0 +1,20 @@
+Alex Mercer
+Email: alex.mercer@example.com
+Phone: +1-202-555-0143
+Location: Boston, MA
+Preferred Language: Python
+
+Education:
+- B.S. in Computer Science, MIT (2020 - 2024)
+
+Skills:
+- Languages: Python, JavaScript, TypeScript, SQL, C++
+- Frameworks: FastAPI, Flask, Django, React, Node.js
+- Tools: Docker, PostgreSQL, Redis, Git, Linux
+
+Experience:
+- Backend Engineering Intern, Stripe (June 2023 - December 2023)
+  - Built core database migration scripts and optimized transaction APIs.
+  - Worked with Ruby and Go to modularize backend payment rails.
+- Open Source Contributor, FastAPI (2022 - Present)
+  - Patched async middleware issues and added docs.

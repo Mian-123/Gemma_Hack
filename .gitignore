@@ -1,0 +1,20 @@
+# Node modules
+node_modules/
+dist/
+
+# Python virtual environment and cache
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local environment/secrets variables
+.env
+.env.local
+
+# Databases and locks
+*.db
+*.sqlite
+.pnpm-store/

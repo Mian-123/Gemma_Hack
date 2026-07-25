@@ -1,0 +1,21 @@
+David Lightman
+Email: david.lightman@example.com
+Phone: +1-206-555-0112
+Location: Seattle, WA
+Preferred Language: Go
+
+Education:
+- M.S. in Systems Engineering, Stanford University (2018 - 2020)
+- B.S. in Electrical Engineering, Stanford University (2014 - 2018)
+
+Skills:
+- Systems: Go, C, C++, Bash
+- Infrastructure: Kubernetes, Docker, Terraform, AWS, Ansible, Linux Internals
+- Databases: PostgreSQL, SQLite, MySQL
+
+Experience:
+- Systems Engineer, Cloudflare (January 2021 - Present)
+  - Developed and maintained containerized ingress controllers in Go.
+  - Authored automated Terraform blueprints for server cluster provisioning.
+  - Debugged operating system core dump issues and optimized memory footprints.
+- Looking to transition: Interested in Machine Learning Engineering, needs advice on bridging systems experience to PyTorch, model optimization, and data pipelines.
