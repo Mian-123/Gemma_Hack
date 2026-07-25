@@ -1,12 +1,26 @@
-from supabase import create_client, Client
+"""
+Supabase Python client — used ONLY for Storage (resume file uploads).
+All table reads/writes go through SQLAlchemy (session.py), not this client.
+
+NOTE: Supabase recently changed their API key format from JWT (eyJ...)
+to the new sb_publishable_* / sb_secret_* format. The supabase-py
+library v2.5.1 may not yet fully support the new key format for all
+operations. Storage uploads use the service role key directly via HTTP
+if the client fails to initialize.
+"""
 from app.config import settings
 
-supabase_client: Client = None
+supabase_client = None
 
 if settings.SUPABASE_URL and settings.SUPABASE_SERVICE_ROLE_KEY:
     try:
-        supabase_client = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+        from supabase import create_client, Client
+        supabase_client: Client = create_client(
+            settings.SUPABASE_URL,
+            settings.SUPABASE_SERVICE_ROLE_KEY
+        )
+        print("[OK] Supabase storage client initialized.")
     except Exception as e:
-        print(f"Warning: Failed to initialize Supabase client: {e}")
+        print(f"[WARN] Supabase client init failed: {e}. File uploads will use local disk fallback.")
 else:
-    print("Warning: Supabase credentials not configured. Storage operations will fall back to local disk.")
+    print("[INFO] Supabase credentials not set. Resume file uploads will use local disk.")

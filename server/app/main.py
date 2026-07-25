@@ -1,4 +1,5 @@
 import time
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -6,10 +7,26 @@ from slowapi.errors import RateLimitExceeded
 from app.config import settings
 from app.limiter import limiter
 
+# ── Startup: auto-create all DB tables ──────────────────────────
+# Works for both SQLite (local dev) and PostgreSQL (Supabase).
+# No manual migration step needed — tables are created if missing.
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    from app.database.session import engine
+    from app.database import models  # noqa: F401 — registers all models
+    from app.database.session import Base
+    try:
+        Base.metadata.create_all(bind=engine)
+        print("[OK] Database tables created / verified.")
+    except Exception as e:
+        print(f"[WARN] Database setup warning: {e}")
+    yield
+
 app = FastAPI(
     title="OpportunityAI Backend API",
     description="Privacy-First Career Intelligence Platform API",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan,
 )
 
 # Set limiter state in FastAPI app
