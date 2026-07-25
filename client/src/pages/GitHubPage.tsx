@@ -10,12 +10,16 @@ export const GitHubPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  // 1. Fetch connected profile info
+  // FIX: Use the correct GET /github/analysis endpoint — NOT POST /connect with empty username
   const { data: profileRes } = useQuery({
     queryKey: ['github-profile'],
     queryFn: async () => {
-      const res = await api.post<any, ApiResponse<any>>('/github/connect', { username: '' }); // Fetch latest if already connected
-      return res;
+      try {
+        const res = await api.get<any, ApiResponse<any>>('/github/analysis');
+        return res;
+      } catch {
+        return null; // 404 means not connected yet — that's fine
+      }
     }
   });
 
@@ -33,12 +37,12 @@ export const GitHubPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
     onError: (err: any) => {
-      setError(err.message || 'GitHub connection failed. Run backend local server.');
+      setError(err.message || 'GitHub connection failed. Make sure the username is correct.');
     }
   });
 
   const githubData = profileRes?.data;
-  const isConnected = !!githubData && githubData.username;
+  const isConnected = !!githubData?.username;
 
   const handleConnect = (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,12 +135,20 @@ export const GitHubPage: React.FC = () => {
               </h4>
               
               <div className="flex flex-wrap gap-2">
+                {/* FIX: Handle both string[] and {name, confidence, evidence}[] formats */}
                 {githubData.inferredSkills && githubData.inferredSkills.length > 0 ? (
-                  githubData.inferredSkills.map((sk: string) => (
-                    <span key={sk} className="bg-[#0F172A] text-[#818CF8] border border-[#4F46E5]/30 px-2.5 py-1 rounded text-xs font-semibold">
-                      {sk}
-                    </span>
-                  ))
+                  githubData.inferredSkills.map((sk: any, idx: number) => {
+                    const skillName = typeof sk === 'string' ? sk : sk.name || 'Unknown';
+                    const confidence = typeof sk === 'object' ? sk.confidence : null;
+                    return (
+                      <div key={idx} className="bg-[#0F172A] border border-[#4F46E5]/30 px-2.5 py-1.5 rounded text-xs">
+                        <span className="text-[#818CF8] font-semibold">{skillName}</span>
+                        {confidence && (
+                          <span className="ml-1.5 text-[#64748B]">· {confidence}</span>
+                        )}
+                      </div>
+                    );
+                  })
                 ) : (
                   <span className="text-xs text-[#64748B] italic">No skills inferred yet. Sync repos.</span>
                 )}
@@ -154,16 +166,20 @@ export const GitHubPage: React.FC = () => {
                   githubData.repos.map((repo: any, idx: number) => (
                     <div key={idx} className="bg-[#0F172A]/50 border border-[#334155]/30 rounded-lg p-3.5 space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-xs sm:text-sm text-white">{repo.name}</span>
-                        {repo.language && (
+                        <a href={repo.url} target="_blank" rel="noreferrer" className="font-bold text-xs sm:text-sm text-white hover:text-[#818CF8] transition-colors">
+                          {repo.name}
+                        </a>
+                        {/* FIX: languages is {lang: weight} object, not string */}
+                        {repo.languages && Object.keys(repo.languages).length > 0 && (
                           <span className="text-[10px] font-semibold bg-[#334155] text-[#CBD5E1] px-2 py-0.5 rounded">
-                            {repo.language}
+                            {Object.keys(repo.languages)[0]}
                           </span>
                         )}
                       </div>
-                      {repo.description && (
-                        <p className="text-xs text-[#94A3B8] leading-relaxed">{repo.description}</p>
-                      )}
+                      <div className="flex items-center gap-3 text-[10px] text-[#64748B]">
+                        <span>⭐ {repo.stars || 0}</span>
+                        {repo.lastUpdated && <span>Updated: {repo.lastUpdated}</span>}
+                      </div>
                     </div>
                   ))
                 ) : (
