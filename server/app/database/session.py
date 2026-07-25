@@ -1,28 +1,18 @@
-import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
-from dotenv import load_dotenv
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from app.config import settings
 
-load_dotenv()
-
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-if not DATABASE_URL:
-    # Use fallback sqlite for testing or scaffolding safety
-    DATABASE_URL = "sqlite:///./test.db"
+database_url = settings.DATABASE_URL
+if not database_url or database_url == "sqlite:///./test.db":
     print("Warning: DATABASE_URL not set. Falling back to local sqlite.")
+    database_url = "sqlite:///./test.db"
 
-# Use standard postgresql driver or fall back to sqlite
 connect_args = {}
-if DATABASE_URL.startswith("sqlite"):
+if database_url.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
 
-engine = create_engine(
-    DATABASE_URL,
-    connect_args=connect_args,
-    pool_pre_ping=True
-)
-
+engine = create_engine(database_url, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()

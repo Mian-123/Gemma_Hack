@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-import time
 
 router = APIRouter(prefix="/api/v1/health", tags=["health"])
 
@@ -8,9 +7,8 @@ def health():
     return {
         "success": True,
         "data": {
-            "status": "healthy",
-            "timestamp": time.time(),
-            "model_configured": "gemma4:e2b"
+            "status": "ok",
+            "version": "1.0.0"
         },
         "error": None
     }

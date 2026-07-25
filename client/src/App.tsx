@@ -4,8 +4,25 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAppStore } from './store/useAppStore';
 import { MainLayout } from './layouts/MainLayout';
 import { Dashboard } from './pages/Dashboard';
+import { Login } from './pages/Login';
+import { Register } from './pages/Register';
+import { Onboarding } from './pages/Onboarding';
+import { ResumePage } from './pages/ResumePage';
+import { GitHubPage } from './pages/GitHubPage';
+import { OpportunitiesPage } from './pages/OpportunitiesPage';
+import { OpportunityDetailPage } from './pages/OpportunityDetailPage';
+import { RoadmapPage } from './pages/RoadmapPage';
+import { MarketPage } from './pages/MarketPage';
+import { ProfilePage } from './pages/ProfilePage';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: false,
+    },
+  },
+});
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -16,29 +33,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// Login placeholder page for scaffold completeness
-const Login: React.FC = () => {
-  const { setAuth } = useAppStore();
-  const handleDemoLogin = () => {
-    setAuth("mock_token", { id: "1", email: "developer@example.com", createdAt: new Date().toISOString() });
-  };
-
-  return (
-    <div className="flex-1 flex flex-col items-center justify-center space-y-6 max-w-sm mx-auto">
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight">Login to OpportunityAI</h2>
-        <p className="text-sm text-[#94A3B8]">Privacy-first AI Career Intelligence</p>
-      </div>
-      <button 
-        onClick={handleDemoLogin}
-        className="w-full bg-[#4F46E5] hover:bg-[#4F46E5]/90 text-white font-medium py-2 rounded-md transition-colors"
-      >
-        Sign In (Demo Mode)
-      </button>
-    </div>
-  );
-};
-
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -46,6 +40,9 @@ export default function App() {
         <MainLayout>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            
             <Route 
               path="/" 
               element={
@@ -54,6 +51,63 @@ export default function App() {
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/resume" 
+              element={
+                <ProtectedRoute>
+                  <ResumePage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/github" 
+              element={
+                <ProtectedRoute>
+                  <GitHubPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/opportunities" 
+              element={
+                <ProtectedRoute>
+                  <OpportunitiesPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/opportunities/:id" 
+              element={
+                <ProtectedRoute>
+                  <OpportunityDetailPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/roadmap/:reportId" 
+              element={
+                <ProtectedRoute>
+                  <RoadmapPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/market" 
+              element={
+                <ProtectedRoute>
+                  <MarketPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } 
+            />
+            
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </MainLayout>

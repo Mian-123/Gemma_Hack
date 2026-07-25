@@ -1,7 +1,7 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { api } from '../services/api';
 import { useAppStore } from '../store/useAppStore';
-import { ApiResponse, User } from '../types';
+import type { ApiResponse, User } from '../types';
 
 export const useAuth = () => {
   const { setAuth, clearAuth, token } = useAppStore();

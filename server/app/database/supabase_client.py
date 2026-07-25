@@ -1,15 +1,12 @@
-import os
 from supabase import create_client, Client
-from dotenv import load_dotenv
-
-load_dotenv()
-
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_ANON_KEY")
+from app.config import settings
 
 supabase_client: Client = None
 
-if SUPABASE_URL and SUPABASE_KEY:
-    supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
+if settings.SUPABASE_URL and settings.SUPABASE_SERVICE_ROLE_KEY:
+    try:
+        supabase_client = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+    except Exception as e:
+        print(f"Warning: Failed to initialize Supabase client: {e}")
 else:
-    print("Warning: Supabase credentials not fully configured in environment.")
+    print("Warning: Supabase credentials not configured. Storage operations will fall back to local disk.")

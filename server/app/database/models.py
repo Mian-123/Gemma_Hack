@@ -11,6 +11,7 @@ class User(Base):
 
     profile = relationship("Profile", back_populates="user", uselist=False, cascade="all, delete-orphan")
     resumes = relationship("Resume", back_populates="user", cascade="all, delete-orphan")
+    github_profile = relationship("GitHubProfile", back_populates="user", uselist=False, cascade="all, delete-orphan")
     skill_gap_reports = relationship("SkillGapReport", back_populates="user", cascade="all, delete-orphan")
     roadmaps = relationship("Roadmap", back_populates="user", cascade="all, delete-orphan")
 
@@ -39,6 +40,17 @@ class Resume(Base):
     created_at = Column(DateTime, default=func.now(), nullable=False)
 
     user = relationship("User", back_populates="resumes")
+
+class GitHubProfile(Base):
+    __tablename__ = 'github_profiles'
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), unique=True, nullable=False)
+    username = Column(String(100), nullable=False)
+    repos = Column(JSON, nullable=False)
+    inferred_skills = Column(JSON, nullable=False)
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
+
+    user = relationship("User", back_populates="github_profile")
 
 class Opportunity(Base):
     __tablename__ = 'opportunities'

@@ -24,11 +24,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             <span className="text-[#4F46E5]">Opportunity</span>AI
           </Link>
           {isAuthenticated && (
-            <nav className="hidden md:flex items-center gap-5 text-sm font-medium text-[#94A3B8]">
+            <nav className="hidden lg:flex items-center gap-5 text-sm font-medium text-[#94A3B8]">
               <Link to="/" className="hover:text-[#F1F5F9] transition-colors">Dashboard</Link>
               <Link to="/opportunities" className="hover:text-[#F1F5F9] transition-colors">Opportunities</Link>
               <Link to="/market" className="hover:text-[#F1F5F9] transition-colors">Market Intel</Link>
-              <Link to="/tools" className="hover:text-[#F1F5F9] transition-colors">Career Tools</Link>
+              <Link to="/resume" className="hover:text-[#F1F5F9] transition-colors">Resume Intel</Link>
+              <Link to="/github" className="hover:text-[#F1F5F9] transition-colors">GitHub Sync</Link>
+              <Link to="/profile" className="hover:text-[#F1F5F9] transition-colors">Settings</Link>
             </nav>
           )}
         </div>

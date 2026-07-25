@@ -1,9 +1,10 @@
 import time
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-from typing import Any, Optional
+from slowapi.errors import RateLimitExceeded
+from app.config import settings
+from app.limiter import limiter
 
 app = FastAPI(
     title="OpportunityAI Backend API",
@@ -11,22 +12,43 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Set limiter state in FastAPI app
+app.state.limiter = limiter
+
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[settings.CORS_ORIGIN],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Standard envelope model
-class ApiResponseEnvelope(BaseModel):
-    success: bool
-    data: Optional[Any] = None
-    error: Optional[str] = None
+# Global Exception Handler for RateLimitExceeded
+@app.exception_handler(RateLimitExceeded)
+async def custom_rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={
+            "success": False,
+            "data": None,
+            "error": f"Rate limit exceeded: {exc.detail or 'Too many requests'}"
+        }
+    )
 
-# Global Exception Handler
+# Global Exception Handler for FastAPI HTTPExceptions
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "success": False,
+            "data": None,
+            "error": exc.detail
+        }
+    )
+
+# Global Exception Handler for Generic Unhandled Exceptions
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
@@ -38,9 +60,9 @@ async def global_exception_handler(request: Request, exc: Exception):
         }
     )
 
+# Import and register routers
 from app.api import auth, profile, resume, github, opportunities, ai, market, health
 
-# Include routers
 app.include_router(auth.router)
 app.include_router(profile.router)
 app.include_router(resume.router)
